@@ -14,7 +14,13 @@ async function parseCSV() {
     const parser = readStream.pipe(parse({ fromLine: 2, delimiter: ',' }))
 
     for await (const record of parser) {
-        const [title, description, completed_at = null, created_at = new Date(), updated_at = new Date()] = record
+        const [
+            title, 
+            description, 
+            completed_at = null, 
+            created_at = new Date(), 
+            updated_at = new Date()
+        ] = record
 
         const task = {
             id: randomUUID(),
@@ -30,9 +36,9 @@ async function parseCSV() {
         try {
             const response = await http.request(`${apiUrl}/tasks`, task);
             database.insert('tasks', task)
-            console.log('Requisição enviada com sucesso:', response.data);
+            console.log('Requisição enviada com sucesso:');
         } catch (error) {
-            console.error('Erro ao enviar requisição:', error?.message);
+            console.error('Erro ao enviar requisição:');
         }
     }
 }
