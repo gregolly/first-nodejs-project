@@ -11,25 +11,25 @@ const apiUrl = 'http://localhost:3333/tasks'
 
 async function parseCSV() {
     const readStream = fs.createReadStream(filePath)
-    const parser = readStream.pipe(parse({ delimiter: ',' }))
+    const parser = readStream.pipe(parse({ fromLine: 2, delimiter: ',' }))
 
     for await (const record of parser) {
-        const [title, description] = record
+        const [title, description, completed_at = null, created_at = new Date(), updated_at = new Date()] = record
 
         const task = {
             id: randomUUID(),
             title,
             description,
-            completed_at: null,
-            created_at: new Date(),
-            updated_at: new Date(),
+            completed_at,
+            created_at,
+            updated_at
         }
 
         console.log(task)
 
         try {
             const response = await http.request(`${apiUrl}/tasks`, task);
-            database.insert('tasks', data)
+            database.insert('tasks', task)
             console.log('Requisição enviada com sucesso:', response.data);
         } catch (error) {
             console.error('Erro ao enviar requisição:', error?.message);
